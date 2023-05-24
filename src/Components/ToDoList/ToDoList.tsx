@@ -1,12 +1,13 @@
-import React from 'react'
-import Header from './Header'
+import Header from "../Header/Header";
+import TaskInput from "../TaskInput";
 
 const ToDoList = () => {
     return (
-        <div className='h-[70%] w-[30%] bg-white rounded-xl shadow-2xl p-5'>
-            <Header title='Reminder' sizeText='30'></Header>
+        <div className="h-[70%] w-[30%] bg-white rounded-xl shadow-2xl p-5 flex flex-col">
+            <Header title="Reminder" />
+            <TaskInput />
         </div>
-    )
-}
+    );
+};
 
-export default ToDoList
+export default ToDoList;
