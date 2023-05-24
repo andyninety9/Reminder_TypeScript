@@ -1,3 +1,5 @@
+import React from "react";
+
 const Title = ({ title }: { title: string }) => {
     return (
         <div className="w-full h-auto flex justify-start items-center p-5">
