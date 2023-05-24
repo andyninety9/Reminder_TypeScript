@@ -6,6 +6,8 @@ import { TodoTypes } from "../PropTypes/todo.proptype";
 import { debug, log } from "../../constants";
 import PropTypes from "prop-types";
 import CheckIcon from "@mui/icons-material/Check";
+import { Button, TextField } from "@mui/material";
+import { green, purple } from "@mui/material/colors";
 
 interface TaskInputProps {
     addTodo: (name: string) => void;
@@ -39,20 +41,27 @@ const TaskInput = (props: TaskInputProps) => {
     return (
         <div className="w-full h-[50px]">
             <form
-                className="flex items-center justify-center"
+                className="flex items-baseline justify-center gap-5"
                 onSubmit={handleSubmit}>
-                <input
+                <TextField
                     className="h-[3rem] flex-grow-1 mr-[1rem] rounded-[0.7rem] text-[14px] px-[1rem] border-[1px] focus:outline-[#9d3fe7]"
-                    type="text"
-                    placeholder="Enter your task..."
+                    label="Add new task..."
+                    variant="standard"
                     onChange={onChangeInput}
                     value={currentTodo ? currentTodo.name : name}
                 />
-                <button
+                <Button
+                    sx={{
+                        width: "80px",
+                        borderRadius: "20px 0px 20px 20px",
+                        outlineColor: purple[500],
+                    }}
+                    variant="outlined"
                     className="flex-shrink-0 w-[3rem] h-[3rem] rounded-[0.7rem] flex justify-center items-center p-0 border-[1px] text-[12px] font-[Montserrat-Regular] bg-[#9d3fe7] hover:bg-[#5a4bad] text-white"
-                    type="submit">
-                    {currentTodo ? <CheckIcon /> : <AddIcon />}
-                </button>
+                    type="submit"
+                    endIcon={currentTodo ? <CheckIcon /> : <AddIcon />}>
+                    {currentTodo ? "Change" : "Add"}
+                </Button>
             </form>
         </div>
     );
