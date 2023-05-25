@@ -7,15 +7,15 @@ interface PostItemType {
 const PostItem = ({ post }: PostItemType) => {
     return (
         <div className="w-[300px] h-[400px] shadow-xl bg-[#fff] rounded-xl flex flex-col p-[15px]">
-            <div className="h-[60%] w-full">
+            <div className="h-[60%] overflow-hidden w-full rounded-lg">
                 <img
-                    className="h-full w-full object-cover rounded-lg"
+                    className="hover:scale-110 h-full w-full object-cover rounded-lg"
                     src={post.postImage}
                     alt=""
                 />
             </div>
             <div className="mt-4 flex flex-col">
-                <h1 className="text-[30px] font-[Montserrat-Bold]">
+                <h1 className="text-[20px] overflow-hidden h-[60px] font-[Montserrat-Bold]">
                     {post.postTitle}
                 </h1>
                 <h2 className="h-[50px] w-full overflow-hidden py-3">

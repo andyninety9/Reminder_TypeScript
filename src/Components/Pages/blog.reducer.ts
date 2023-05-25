@@ -12,6 +12,12 @@ const initialState: BlogState = {
 
 export const addPost = createAction<Post>("blog/addPost");
 
-const blogReducer = createReducer(initialState, (builder) => {});
+const blogReducer = createReducer(initialState, (builder) => {
+    builder.addCase(addPost, (state, action) => {
+        //immerjs giúp hcúng ta mutate một object an toàn
+        const post = action.payload;
+        state.PostList.push(post);
+    });
+});
 
 export default blogReducer;
