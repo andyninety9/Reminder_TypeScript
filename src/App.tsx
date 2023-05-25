@@ -1,11 +1,10 @@
-import "./App.css";
-import ToDoList from "./Components/ToDoList";
+import Blog from "./Components/Pages/Blog";
 
 function App() {
   return (
-    <div className="h-[100vh] w-[100vw] flex justify-center items-center">
-      <ToDoList></ToDoList>
-    </div>
+    <>
+      <Blog />
+    </>
   );
 }
 
