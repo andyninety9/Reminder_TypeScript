@@ -1,8 +1,19 @@
 import { Box, Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Post } from "../../../types/blog.type";
-import { useDispatch } from "react-redux";
-import { addPost } from "../blog.reducer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    addPost,
+    cancelEditingPost,
+    finishEditingPost,
+    startEditPost,
+} from "../blog.reducer";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { RootState } from "../../../store";
 
 const initialState: Post = {
     id: "",
@@ -17,15 +28,35 @@ const initialState: Post = {
 const InputUser = () => {
     const [formData, setFormData] = useState<Post>(initialState);
     const dispatch = useDispatch();
+    const editingPost = useSelector(
+        (state: RootState) => state.blog.editingPost
+    );
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (editingPost) {
+            dispatch(finishEditingPost(formData));
+            setFormData(initialState);
+            return;
+        }
         const formDataWithId = { ...formData, id: new Date().toISOString() };
         dispatch(addPost(formDataWithId));
+        setFormData(initialState);
     };
 
+    const handleCancelEditingPost = () => {
+        dispatch(cancelEditingPost());
+    };
+
+    // const handleFinishEditingPost = (post: Post) => {
+    //     dispatch(finishEditingPost(post));
+    // };
+
+    useEffect(() => {
+        setFormData(editingPost || initialState);
+    }, [editingPost]);
+
     return (
-        // <form onSubmit={handleSubmit}>
         <div className="h-[700px] w-full shadow-xl flex p-8">
             <div className="flex flex-col h-full desktop:w-[60%] phone:w-full">
                 <h1 className="text-[50px] font-[Montserrat-Medium]">
@@ -33,6 +64,7 @@ const InputUser = () => {
                     Create new post.
                 </h1>
                 <Box
+                    onReset={handleCancelEditingPost}
                     onSubmit={handleSubmit}
                     className="flex flex-col items-center"
                     component="form"
@@ -105,65 +137,90 @@ const InputUser = () => {
                             }
                         />
                     </div>
-                    <div className="flex items-center gap-[35px]">
-                        <div className="flex flex-col ml-6">
-                            <label
-                                htmlFor="publishDate"
-                                className="text-[13px]">
-                                Publish Date
-                            </label>
-                            <input
-                                className="h-[40px] w-[400px] p-5 border text-[13px] rounded-lg outline-none"
-                                type="datetime-local"
-                                id="publishDate"
-                                placeholder=""
-                                required
-                                value={formData.postDate}
-                                onChange={(event) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        postDate: event.target.value,
-                                    }))
-                                }
-                            />
-                        </div>
-                        <div className="flex gap-5">
-                            <input
-                                type="checkbox"
-                                id="publish"
-                                checked={formData.published}
-                                onChange={(event) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        published: event.target.checked,
-                                    }))
-                                }
-                            />
-                            <label htmlFor="publish">
-                                Do you want to publish?
-                            </label>
-                        </div>
+                    <div>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={["DatePicker"]}>
+                                <DatePicker
+                                    value={dayjs(formData.postDate)}
+                                    onChange={(newValue) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            postDate:
+                                                dayjs(newValue).format(
+                                                    "YYYY-MM-DD"
+                                                ),
+                                        }))
+                                    }
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                        {/* </div> */}
                     </div>
-                    <Button
-                        type="submit"
-                        sx={{
-                            width: "150px",
-                            height: "40px",
-                            margin: "12px",
-                            borderRadius: "10px",
-                        }}
-                        variant="contained">
-                        Publish Post
-                    </Button>
+                    <div className="flex gap-5">
+                        <input
+                            type="checkbox"
+                            id="publish"
+                            checked={formData.published}
+                            onChange={(event) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    published: event.target.checked,
+                                }))
+                            }
+                        />
+                        <label htmlFor="publish">Do you want to publish?</label>
+                    </div>
+                    {!editingPost ? (
+                        <Button
+                            color="info"
+                            type="submit"
+                            sx={{
+                                width: "100px",
+                                height: "40px",
+                                margin: "12px",
+                                borderRadius: "10px",
+                            }}
+                            variant="contained">
+                            Publish Post
+                        </Button>
+                    ) : (
+                        <div>
+                            <Button
+                                type="submit"
+                                sx={{
+                                    width: "100px",
+                                    height: "40px",
+                                    margin: "12px",
+                                    borderRadius: "10px",
+                                }}
+                                color="warning"
+                                variant="contained">
+                                Update
+                            </Button>
+                            <Button
+                                type="reset"
+                                color="success"
+                                sx={{
+                                    width: "100px",
+                                    height: "40px",
+                                    margin: "12px",
+                                    borderRadius: "10px",
+                                }}
+                                variant="outlined">
+                                Cancel
+                            </Button>
+                        </div>
+                    )}
                 </Box>
             </div>
-            <img
-                className="desktop:w-[40%] phone:w-0 object-cover rounded-lg shadow-lg hover:opacity-80 cursor-pointer"
-                src="https://images.unsplash.com/photo-1684943210712-7aa4b85b4474?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80"
-                alt=""
-            />
+            <div className="desktop:w-[40%] h-full overflow-hidden">
+                <img
+                    className="object-cover rounded-lg shadow-lg hover:scale-110 cursor-pointer w-full h-full"
+                    src="https://www.minimaldesksetups.com/wp-content/uploads/2020/10/1-2.jpg.webp"
+                    alt=""
+                />
+            </div>
         </div>
-        // </form>
     );
 };
 
